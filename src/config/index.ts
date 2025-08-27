@@ -4,6 +4,7 @@ dotenv.config();
 
 export const config = {
   botToken: process.env.BOT_TOKEN!,
+  webhookUrl: process.env.WEBHOOK_URL!,
   mongoUri: process.env.MONGODB_URI!,
   rpcUrls: {
     bsc: process.env.BSC_RPC_URL!,

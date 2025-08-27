@@ -20,7 +20,7 @@ export class TelegramBotService {
     private priceService: PriceService,
     private blockchainService: BlockchainService
   ) {
-    this.bot = new TelegramBot(config.botToken, { polling: true });
+    this.bot = new TelegramBot(config.botToken);
 
     // Initialize PaymentVerificationService
     this.paymentVerificationService = new PaymentVerificationService(
@@ -85,12 +85,12 @@ export class TelegramBotService {
       this.orderHandler.handleCallbackQuery(query);
     });
 
-    // Text message handler
+    // Text message handler for non-commands
     this.bot.on("message", (msg) => {
-      if (msg.text && !msg.text.startsWith("/")) {
+      // Ignore commands, which are handled by onText listeners
+      if (msg.text && msg.text.startsWith("/")) {
         return;
       }
-
       this.orderHandler.handleTextMessage(msg);
     });
 
@@ -331,5 +331,16 @@ export class TelegramBotService {
   // Public method to get bot instance (for external use)
   getBot(): TelegramBot {
     return this.bot;
+  }
+
+  // Set the webhook
+  async setWebhook(url: string): Promise<void> {
+    try {
+      await this.bot.setWebHook(url);
+      console.log(`Webhook set to ${url}`);
+    } catch (error) {
+      console.error("Failed to set webhook:", error);
+      throw error; // Propagate error to startup
+    }
   }
 }
